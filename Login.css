@@ -1,0 +1,16 @@
+div {
+    text-align: right;
+    position: relative;
+    right:100px;
+    top: 120px;
+}
+
+#logo {
+    max-width: 55%;
+    max-height: 30%;
+    
+}
+
+#form {
+    border-style: dotted;
+}
