@@ -11,7 +11,7 @@
         $result = $con->query($sql);
             
         if($result->num_rows > 0){  
-            header("Location: Index.html");
+            header("Location: http://127.0.0.1:5000/");
         }  
         else{  
             echo "<h1> Login failed. Invalid username or password.</h1>";  
