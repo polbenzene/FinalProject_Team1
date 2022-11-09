@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <script>
+    window.setTimeout(function() {
+      window.location.reload();
+    },1000)
+</script>
+
+  <body>
+
+    <h1>Live streaming</h1>
+    
+    <p id="space">Available Parking Space: {{p}} Occupied Parking Space: {{o}} Total Parking Spaces: 24</p>
+    <div>
+
+        <img src="{{ url_for('video') }}" width="50%"/>
+    </div>
+      
+    </body>
+
+
+</html>
