@@ -5,7 +5,10 @@ Flask,
 opencv,
 pickle,
 numpy, 
-cvzone
+cvzone,
+xampp
+
+DOWNLOAD ALL THE FILES!!!
 
 upon running the program in your IDE open the link shown in the terminal
 link: http://127.0.0.1:5000/
