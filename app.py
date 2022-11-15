@@ -4,17 +4,19 @@ import pickle
 import numpy as np
 import cvzone
 
+
 width, height = 45, 90
-
+spacecounter = 0
+occupied = 0
 app=Flask(__name__)
-
 #video input
-camera=cv2.VideoCapture('carpark.mp4')
+camera=cv2.VideoCapture('carparkk.mp4')
 #camera=cv2.VideoCapture(0)
 
 def generate_frames():
     def checkspaces(imgpro):
-
+        global spacecounter, occupied
+        occupied = 0
         spacecounter = 0
 
         for pos in posList:
@@ -40,6 +42,7 @@ def generate_frames():
             thickness= 1, offset = 0, colorR=color) 
         cvzone.putTextRect(frame,f'Free: {spacecounter}/{len(posList)}',(10,50), scale = 3,
             thickness= 2, offset = 5, colorR=(0,0,255))
+        occupied = len(posList) - spacecounter
 
     while True:
             
@@ -73,11 +76,20 @@ with open('Carparkpos', 'rb') as f:
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', )
 
 @app.route('/video')
 def video():
     return Response(generate_frames(),mimetype='multipart/x-mixed-replace; boundary=frame')
 
-if __name__=="__main__":
+@app.route('/count')
+def count():
+    p = spacecounter
+    return (str(p))
+
+@app.route('/occupied')
+def occcupied():
+    o = occupied
+    return (str(o))
+if __name__=="__main_":
     app.run(debug=True)
