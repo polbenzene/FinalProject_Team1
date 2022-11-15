@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html>
-  <script>
-    window.setTimeout(function() {
-      window.location.reload();
-    },1000)
-</script>
+  <script src="https://unpkg.com/htmx.org@1.6.1"></script>
 
   <body>
 
     <h1>Live streaming</h1>
     
-    <p id="space">Available Parking Space: {{p}} Occupied Parking Space: {{o}} Total Parking Spaces: 24</p>
-    <div>
-
-        <img src="{{ url_for('video') }}" width="50%"/>
+   
+    <div class = "video">
+      <div class="h">
+        <p>Available Space:</p>
+        <div hx-get="/count" hx-trigger="every 0.1s"></div>
+        <p>Occupied Space:</p>
+        <div hx-get="/occupied" hx-trigger="every 0.1s"></div>  
+        <img src="{{ url_for('video') }}" width="75%"/>
     </div>
       
     </body>
