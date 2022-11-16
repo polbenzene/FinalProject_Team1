@@ -1,78 +1,84 @@
 from flask import Flask,render_template,Response
 import cv2
 import pickle
-import numpy as np
-import cvzone
 
-
-width, height = 45, 90
-spacecounter = 0
+#counters for parking_availability
+counter = 0 
 occupied = 0
+
 app=Flask(__name__)
-#video input
-camera=cv2.VideoCapture('carparkk.mp4')
-#camera=cv2.VideoCapture(0)
+
+#video source
+cap = cv2.VideoCapture('carpark.mp4')
+
+#parking space postions
+with open('park_positions', 'rb') as f:
+    park_positions = pickle.load(f)
+
+font = cv2.FONT_HERSHEY_COMPLEX_SMALL
+
+# Parking space parameters
+width, height = 45, 90
+full = width * height
+empty = 0.22
 
 def generate_frames():
-    def checkspaces(imgpro):
-        global spacecounter, occupied
+    def parking_space_counter(img_processed):
+        global counter, occupied
+
+        counter = 0
         occupied = 0
-        spacecounter = 0
 
-        for pos in posList:
-            x,y = pos
+        for position in park_positions:
+            x, y = position
 
-            imgcrop = imgpro[y:y+height,x:x+width]
+            img_crop = img_processed[y:y + height, x:x + width]
+            count = cv2.countNonZero(img_crop)
 
-            #cv2.imshow(str(x*y), imgcrop)
-            
-            count = cv2.countNonZero(imgcrop)
-        
-            if count < 1350:
-                color =(0,255,0)
-                thickness = 5
-                spacecounter += 1
+            ratio = count / full
+
+            if ratio < empty:
+                color = (0, 255, 0)
+                counter += 1
             else:
-                color =(0,0,255,0)
-                thickness = 2
+                color = (0, 0, 255)
 
-                
-            cv2.rectangle(frame, pos,(pos[0]+width, pos[1]+height ), color, thickness)
-            cvzone.putTextRect(frame,str(count),(x,y+height-5), scale = 1,
-            thickness= 1, offset = 0, colorR=color) 
-        cvzone.putTextRect(frame,f'Free: {spacecounter}/{len(posList)}',(10,50), scale = 3,
-            thickness= 2, offset = 5, colorR=(0,0,255))
-        occupied = len(posList) - spacecounter
+            cv2.rectangle(overlay, position, (position[0] + width, position[1] + height), color, -1)
+            #cv2.putText(overlay, "{:.2f}".format(ratio), (x + 4, y + height - 4), font, 0.7, (255, 255, 255), 1, cv2.LINE_AA)
+        occupied = len(park_positions) - counter    
 
     while True:
-            
-        ## read the camera frame
-        if camera.get(cv2.CAP_PROP_POS_FRAMES) == camera.get(cv2.CAP_PROP_FRAME_COUNT):
-            camera.set(cv2.CAP_PROP_POS_FRAMES, 0)
-        success,frame=camera.read()   
-        imgGray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-        imgBlur = cv2.GaussianBlur(imgGray,(3, 3), 1)
-        imgthreshold = cv2.adaptiveThreshold(imgBlur, 255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-        cv2.THRESH_BINARY_INV, 25, 16)
 
-        imgmedian = cv2.medianBlur(imgthreshold,5)
-        kernel = np.ones((3,3),np.uint8)
-        imgdilate = cv2.dilate(imgmedian,kernel, iterations=1) 
-        checkspaces(imgdilate)
-        #cv2.imshow("Image", image) 
-        #cv2.imshow("Imageblur", imgBlur) 
-        #cv2.imshow("Imagethresh", imgmedian)
+        # Video looping
+        if cap.get(cv2.CAP_PROP_POS_FRAMES) == cap.get(cv2.CAP_PROP_FRAME_COUNT):
+            cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+
+        success, frame = cap.read()
+        overlay = frame.copy()
+
+        # Frame processing
+        img_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        img_blur = cv2.GaussianBlur(img_gray, (3, 3), 1)
+        img_thresh = cv2.adaptiveThreshold(img_blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 25, 16)
+
+        parking_space_counter(img_thresh)
+        alpha = 0.7
+        frame_new = cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0)
+        
+        #w, h = 220, 60
+        #cv2.rectangle(frame_new, (0, 0), (w, h), (255, 0, 255), -1)
+        #cv2.putText(frame_new, f"{counter}/{len(park_positions)}", (int(w / 10), int(h * 3 / 4)), font, 2, (255, 255, 255), 2, cv2.LINE_AA)
+        #cv2.namedWindow('frame', cv2.WINDOW_NORMAL)
+        #cv2.setWindowProperty('frame', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)  
+        
         if not success:
             break
         else:
-            ret,buffer=cv2.imencode('.jpg',frame)
-            frame=buffer.tobytes()
+            ret,buffer=cv2.imencode('.jpg',frame_new)
+            frame_new=buffer.tobytes()
 
         yield(b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-with open('Carparkpos', 'rb') as f:
-        posList = pickle.load(f)
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame_new + b'\r\n')
 
 @app.route('/')
 def index():
@@ -81,15 +87,27 @@ def index():
 @app.route('/video')
 def video():
     return Response(generate_frames(),mimetype='multipart/x-mixed-replace; boundary=frame')
-
 @app.route('/count')
 def count():
-    p = spacecounter
+    p = counter
     return (str(p))
 
 @app.route('/occupied')
 def occcupied():
     o = occupied
     return (str(o))
+
 if __name__=="__main_":
     app.run(debug=True)
+
+       # w, h = 220, 60
+      #  cv2.rectangle(frame_new, (0, 0), (w, h), (255, 0, 255), -1)
+      #  cv2.putText(frame_new, f"{counter}/{len(park_positions)}", (int(w / 10), int(h * 3 / 4)), font, 2, (255, 255, 255), 2, cv2.LINE_AA)
+
+      #  cv2.namedWindow('frame', cv2.WINDOW_NORMAL)
+      #  cv2.setWindowProperty('frame', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+       # cv2.imshow('frame', frame_new)
+        # cv2.imshow('image_blur', img_blur)
+        # cv2.imshow('image_thresh', img_thresh)
+
