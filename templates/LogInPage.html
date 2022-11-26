@@ -20,12 +20,12 @@
                 <fieldset>
                     <img src="{{url_for('static',filename='logo_circular.png')}}" id="logo">
                     
-                    <form method ="post">
+                    <form action="'/" method="'post">
                         <label>Username</label>
-                        <input class ="input" type = "text" name ="username" placeholder="Username">
+                        <input type = "text" name ="username" required/>
                         <label>Password</label>
-                        <input class ="input" type ="password" name="password" placeholder="Password">
-                        <button type="submit" class="button is-success">Login</button>
+                        <input type = "password" name ="password" required/>
+                        <input type="submit">Login</button>
                     </form>
                 </fieldset>
             </div>
