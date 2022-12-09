@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='styles/user.css')}}">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Roboto&display=swap" rel="stylesheet">
+        <title>Find me parking!</title>
+    </head>
+
+    <body>
+    <div class="header">
+            <div id="schoolLogoContainer"><img src="{{url_for('static',filename='BatStateU_NEU_Logo_Small.png')}}" alt="BatStateU NEU logo" ></div>
+            <div id="txt1">BATSTATEU PARKING :&nbsp
+                <ul>
+                    <li class="dropdown">
+                        <a class="dropBtn" href="#videoFeed">VIEW USERS v</a>
+                        <div class="dropdownContent">
+                            <a href="{{ url_for('omg') }}">VIEW LOCATION</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div id="txt2">ADMIN VIEW</div>
+        </div>
+    </div>
+    <div class = "userListContainer">
+        <div class="box">
+            <table class = "userList" >
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Plate Number</th>
+                  <th>Contact Number</th>
+                </tr>
+                
+                <tr>
+                  <td>-NIXS6RTHgITik8Y39kJ</td>
+                  <td>Paul</td>
+                  <td>DAH-7129</td>
+                  <td>09364112461</td>
+                </tr>
+                
+                <tr>
+                  <td>-NIXw_LdZEHf5GIkGmih</td>
+                  <td>qwerty</td>
+                  <td>qwerty</td>
+                  <td>12345678901</td>
+                </tr>
+                
+                <tr>
+                  <td>-NIY2J5UE4iViHjBewHG</td>
+                  <td>pol</td>
+                  <td>pol</td>
+                  <td>369</td>
+                </tr>
+
+                <tr class="empty">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+                <tr class="empty">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+                <tr class="empty">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+              </table>
+            </div>
+    </div>
+    </body>
+</html>

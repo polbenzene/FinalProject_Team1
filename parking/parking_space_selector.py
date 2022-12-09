@@ -46,6 +46,7 @@ def mouse_events(event, x, y, flag, param):
 
 while True:
 
+    #img = cv2.imread('kekw.png')
     img = cv2.imread('parkinglot.png')
 
     for position in park_positions:

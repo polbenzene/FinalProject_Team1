@@ -19,15 +19,16 @@ def index():
 
         if request.form['password'] == 'password':
             session['user'] = request.form['username']
-            return redirect(url_for('protected'))
+            return redirect(url_for('adminview'))
 
     return render_template('LoginPage.html')
 
-@app.route('/protected')
-def protected():
+
+@app.route('/adminview')
+def adminview():
     if g.user:
         return render_template('index.html',user=session['user'])
-    return redirect(url_for('protected'))
+    return redirect(url_for('adminview'))
 
 @app.before_request
 def before_request():
@@ -37,8 +38,8 @@ def before_request():
         g.user = session['user']
 
 #video source
+#cap = cv2.VideoCapture("rtsp://Admin2022:Admin2022@192.168.1.68/stream1")
 cap = cv2.VideoCapture('carpark.mp4')
-
 #parking space postions
 with open('park_positions', 'rb') as f:
     park_positions = pickle.load(f)
@@ -109,11 +110,17 @@ def generate_frames():
                    b'Content-Type: image/jpeg\r\n\r\n' + frame_new + b'\r\n')
                    
 #website 
-@app.route('/')
-def login():
-    return render_template('LoginPage.html', )
 
-#processed parking lot video
+#processed parking lot video\
+@app.route('/users')
+def users():
+    return render_template('users.html')
+
+@app.route('/omg')
+def omg():
+    return render_template('index.html')
+
+
 @app.route('/video')
 def video():
     return Response(generate_frames(),mimetype='multipart/x-mixed-replace; boundary=frame')
