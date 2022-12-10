@@ -61,7 +61,7 @@ fieldset{
     width: max-content;
 }
 
-#button{
+.button is-success{
      background-color: #890B1C;
      color: white;
      border-radius: 20px;
